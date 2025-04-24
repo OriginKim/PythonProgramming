@@ -265,47 +265,60 @@ for i in range(1, height + 1):
 
 ## 3. 기출
 
-### 기출 1. 누진요금제 전기요금 계산
+### 기출 1. 한전 주택용 누진요금제 계산 함수
 
-**문제**  
-하계(7.1 ~ 8.31) 구간 누진요금제 기준.  
-월 사용량(Wh)을 입력받아 구간별 전기요금을 계산하는  
-`calculateElectricRate(usedWh)` 함수를 작성하시오.
+**문제**
+월(month)과 사용량(kWh)를 입력받아, 계절별 누진요금 구간/단가를 적용한  
+전력량 요금을 소수점 아래 절사(정수)로 반환/출력하는 프로그램을 작성하시오.
 
-- 1구간: 200kWh 이하 → 910 + 사용량 × 112.0  
-- 2구간: 201~450kWh → 1,600 + 사용량 × 206.6  
-- 3구간: 451~1,000kWh → 7,300 + 사용량 × 299.3  
-- 1,000kWh 초과: 사용량 × 728.2
+#### 조건 정리  
+- 입력: `calculateElectricRate(month, kWh)`
+- 1~12월 중 7~8월 하계, 나머지 기타계절로 구분  
+- **하계(7,8월)**  
+  - 1구간: 300kWh 이하 (910 + 사용량 × 112.0)  
+  - 2구간: 301~450kWh (1600 + 사용량 × 206.6)  
+  - 3구간: 450kWh 초과 (7300 + 사용량 × 299.3)  
+  - 1,000kWh 초과(슈퍼유저): 사용량 × 728.2  
+- **기타계절**  
+  - 1구간: 200kWh 이하 (910 + 사용량 × 112.0)  
+  - 2구간: 201~400kWh (1600 + 사용량 × 206.6)  
+  - 3구간: 400kWh 초과 (7300 + 사용량 × 299.3)  
+  - 1,000kWh 초과(슈퍼유저): 사용량 × 728.2  
+- 출력은 소수점 이하 절사(정수)
 
-아래 예시와 같이 결과를 출력한다.
+
+
+#### 풀이 코드
 
 ```python
-def calculateElectricRate(usedWh):
-    if usedWh <= 200:
-        base = 910
-        rate = 112.0
-        fee = base + usedWh * rate
-    elif usedWh <= 450:
-        base = 1600
-        rate = 206.6
-        fee = base + usedWh * rate
-    elif usedWh <= 1000:
-        base = 7300
-        rate = 299.3
-        fee = base + usedWh * rate
-    else:
-        rate = 728.2
-        fee = usedWh * rate
+def calculateElectricRate(month, kWh):
+    fee = 0
+    if month == 7 or month == 8:  # 하계
+        if kWh > 1000:
+            fee = int(kWh * 728.2)
+        elif kWh > 450:
+            fee = int(7300 + kWh * 299.3)
+        elif kWh > 300:
+            fee = int(1600 + kWh * 206.6)
+        else:
+            fee = int(910 + kWh * 112.0)
+    else:  # 기타계절
+        if kWh > 1000:
+            fee = int(kWh * 728.2)
+        elif kWh > 400:
+            fee = int(7300 + kWh * 299.3)
+        elif kWh > 200:
+            fee = int(1600 + kWh * 206.6)
+        else:
+            fee = int(910 + kWh * 112.0)
     return fee
 
-usedWh = int(input("전력사용량을 Wh단위로 입력: "))
-fee = calculateElectricRate(usedWh)
-print("전력사용량은 {}Wh이고".format(usedWh))
-print("전기요금은 {:.1f}원입니다.".format(fee))
+month = int(input("지금은 몇월인가요? "))
+kWh = int(input("사용량은 몇 KWh인가요? "))
+fee = calculateElectricRate(month, kWh)
+print("전력량요금은 {}원입니다.".format(fee))
+전기요금은 {:.1f}원입니다.".format(fee))
 ```
-입력 예시 : 
-전력사용량을 Wh단위로 입력: 220
-
-출력 예시 : 
-전력사용량은 220Wh이고
-전기요금은 24752.0원입니다.
+지금은 몇월인가요? 1
+사용량은 몇 KWh인가요? 800
+전력량요금은 183440원입니다.
