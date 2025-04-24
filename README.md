@@ -261,4 +261,51 @@ for i in range(1, height + 1):
     for star in range(i):
         print('*', end='')
     print()
-``` 
+```
+
+## 3. 기출
+
+### 기출 1. 누진요금제 전기요금 계산
+
+**문제**  
+하계(7.1 ~ 8.31) 구간 누진요금제 기준.  
+월 사용량(Wh)을 입력받아 구간별 전기요금을 계산하는  
+`calculateElectricRate(usedWh)` 함수를 작성하시오.
+
+- 1구간: 200kWh 이하 → 910 + 사용량 × 112.0  
+- 2구간: 201~450kWh → 1,600 + 사용량 × 206.6  
+- 3구간: 451~1,000kWh → 7,300 + 사용량 × 299.3  
+- 1,000kWh 초과: 사용량 × 728.2
+
+아래 예시와 같이 결과를 출력한다.
+
+```python
+def calculateElectricRate(usedWh):
+    if usedWh <= 200:
+        base = 910
+        rate = 112.0
+        fee = base + usedWh * rate
+    elif usedWh <= 450:
+        base = 1600
+        rate = 206.6
+        fee = base + usedWh * rate
+    elif usedWh <= 1000:
+        base = 7300
+        rate = 299.3
+        fee = base + usedWh * rate
+    else:
+        rate = 728.2
+        fee = usedWh * rate
+    return fee
+
+usedWh = int(input("전력사용량을 Wh단위로 입력: "))
+fee = calculateElectricRate(usedWh)
+print("전력사용량은 {}Wh이고".format(usedWh))
+print("전기요금은 {:.1f}원입니다.".format(fee))
+```
+입력 예시 : 
+전력사용량을 Wh단위로 입력: 220
+
+출력 예시 : 
+전력사용량은 220Wh이고
+전기요금은 24752.0원입니다.
