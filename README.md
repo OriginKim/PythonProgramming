@@ -443,3 +443,474 @@ print("전력량요금은 {}원입니다.".format(fee))
 지금은 몇월인가요? 1  
 사용량은 몇 KWh인가요? 800  
 전력량요금은 183440원입니다.  
+
+
+
+# 🟩 시사/실전형 파이썬 예상문제 11선
+
+## 1. 탄소배출+구간별 누진 탄소세
+
+### 문제
+이름과 연간 탄소배출량(ton)을 입력받아
+- 5톤 이하: 면제
+- 5초과~10톤 이하: (초과분)×3만원
+- 10톤 초과: (5~10톤)×3만원 + (10톤초과분)×7만원
+
+총 탄소세를 출력하는 함수 `carbon_tax2(name, emission)`를 작성하시오.
+
+### 정답 코드
+```python
+def carbon_tax2(name, emission):
+    base = 5
+    sec = 10
+    tax = 0
+    if emission <= base:
+        tax = 0
+    elif emission <= sec:
+        tax = (emission - base) * 30000
+    else:
+        tax = (sec - base) * 30000 + (emission - sec) * 70000
+    print(f"{name}님: 총 탄소세 {int(tax)}원(면제:{base}, 5~10:{max(0, min(emission, sec)-base)}, 초과:{max(0, emission-sec)})")
+
+name = input("이름 입력: ")
+emission = float(input("배출량(ton): "))
+carbon_tax2(name, emission)
+```
+
+### 예시 실행
+```
+이름 입력: 김철수
+배출량(ton): 12.8
+김철수님: 총 탄소세 474000원(면제:5, 5~10:5, 초과:2.8)
+```
+
+### 포인트
+- 조건별 구간 분기
+- 실수×정수
+- int()로 소수점 절사
+- 포맷
+
+## 2. 환율+할인+해외직구 총비용
+
+### 문제
+USD가격, 환율, 할인율(%), 관세율(%), 배송비를 입력받아
+- 할인 적용
+- 환율 환산
+- 관세
+- 배송비 합산
+
+최종 결제금액(원)을 출력하는 함수 `overseas_discounted_total()`를 작성하시오.
+
+### 정답 코드
+```python
+def overseas_discounted_total():
+    usd = float(input("USD: "))
+    rate = int(input("환율: "))
+    sale = int(input("할인율(%): "))
+    tax = int(input("관세율(%): "))
+    shipping = int(input("배송비: "))
+    discounted = usd * (100 - sale) / 100
+    krw = int(discounted * rate)
+    customs = int(krw * tax / 100)
+    total = krw + customs + shipping
+    print(f"최종 결제: {total}원")
+
+overseas_discounted_total()
+```
+
+### 예시 실행
+```
+USD: 200
+환율: 1340
+할인율(%): 15
+관세율(%): 8
+배송비: 21000
+최종 결제: 229928원
+```
+
+### 포인트
+- 할인, 환율, 관세, 배송비 모두 반영
+- 산술식, int() 절사
+
+## 3. 기후/날씨 경보 발령
+
+### 문제
+7일간 최고기온 리스트를 받아
+- 30도 초과 3일 이상이면 "폭염경보"
+- 1~2일 "주의보"
+- 0일 "정상" 출력
+
+함수 `heatwave_alert(temps)`를 작성하시오.
+
+### 정답 코드
+```python
+def heatwave_alert(temps):
+    count = 0
+    for t in temps:
+        if t > 30:
+            count += 1
+    if count >= 3:
+        print(f"폭염경보 (30도 초과: {count}일)")
+    elif 1 <= count <= 2:
+        print(f"주의보 (30도 초과: {count}일)")
+    else:
+        print("정상")
+
+lst = input("입력: ").split()
+temps = []
+for s in lst:
+    temps.append(int(s))
+heatwave_alert(temps)
+```
+
+### 예시 실행
+```
+입력: 28 32 31 35 36 33 34
+폭염경보 (30도 초과: 6일)
+```
+
+### 포인트
+- 반복문
+- 조건문
+- 리스트
+- 카운트
+
+## 4. AI 챗봇 욕설·금지어 감지 + 패널티
+
+### 문제
+5회 메시지 입력, 금지어("욕설1" 등) 등장시 2점씩
+- 5점 이상 "이용정지"
+- 미만 "경고점수: n"
+
+함수 `chatbot_penalty()`를 작성하시오.
+
+### 정답 코드
+```python
+def chatbot_penalty():
+    ban = ["욕설1", "욕설2", "폭력", "불법", "해킹"]
+    penalty = 0
+    for i in range(5):
+        msg = input("메시지: ")
+        for w in ban:
+            if w in msg:
+                penalty += 2
+                break
+    if penalty >= 5:
+        print(f"서비스 이용정지 (경고점수: {penalty})")
+    else:
+        print(f"경고점수: {penalty}")
+
+chatbot_penalty()
+```
+
+### 예시 실행
+```
+메시지: 폭력적인 내용
+메시지: 해킹툴 판매
+메시지: 안전한 채팅
+메시지: 불법 프로그램
+메시지: 깨끗한 대화
+서비스 이용정지 (경고점수: 6)
+```
+
+### 포인트
+- 리스트
+- for
+- in
+- break
+- 조건 누적
+
+## 5. 마스크 착용 의무화, 벌금 계산
+
+### 문제
+미세먼지 PM2.5 입력
+- 100 이상: "야외활동 금지(벌금 50만원)"
+- 50 이상: "마스크 착용 의무(벌금 10만원)"
+- 이하: "권고"
+
+함수 `mask_policy(pm)`를 작성하시오.
+
+### 정답 코드
+```python
+def mask_policy(pm):
+    if pm >= 100:
+        print("야외활동 금지(벌금 500000원)")
+    elif pm >= 50:
+        print("마스크 착용 의무(벌금 100000원)")
+    else:
+        print("권고")
+
+pm = int(input("입력: "))
+mask_policy(pm)
+```
+
+### 예시 실행
+```
+입력: 120
+야외활동 금지(벌금 500000원)
+```
+
+### 포인트
+- 조건문
+- 크기비교
+
+## 6. 교통 정기권 할인 계산
+
+### 문제
+총 이용횟수, 나이, 장애인(Y/N), 학생(Y/N)
+- 65세 이상/장애인: 30%
+- 학생: 20%
+- 둘 다: 50%
+- 기본 55000원, 할인 적용
+
+함수 `metro_pass()`를 작성하시오.
+
+### 정답 코드
+```python
+def metro_pass():
+    cnt = int(input("총 이용횟수: "))
+    age = int(input("나이: "))
+    disable = input("장애인(Y/N): ")
+    student = input("학생(Y/N): ")
+    base = 55000
+    discount = 0
+    if age >= 65 or disable == "Y":
+        discount = 0.3
+    if student == "Y":
+        if discount == 0.3:
+            discount = 0.5
+        else:
+            discount = 0.2
+    total = int(base * (1 - discount))
+    print(f"최종 결제금액: {total}원")
+
+metro_pass()
+```
+
+### 예시 실행
+```
+총 이용횟수: 30
+나이: 70
+장애인(Y/N): N
+학생(Y/N): Y
+최종 결제금액: 27500원
+```
+
+### 포인트
+- 중첩 if
+- 논리연산
+- 산술식
+
+## 7. 실시간 전기요금(시간대별 요율)
+
+### 문제
+입력: 시간(0-23), kWh
+- 06-21시: 200원/kWh
+- 22-05시: 120원/kWh
+
+함수 `realtime_electricity(hour, kwh)`를 작성하시오.
+
+### 정답 코드
+```python
+def realtime_electricity(hour, kwh):
+    if 6 <= hour < 22:
+        fee = kwh * 200
+    else:
+        fee = kwh * 120
+    print(f"요금: {fee}원")
+
+hour = int(input("입력(시간): "))
+kwh = int(input("입력(kWh): "))
+realtime_electricity(hour, kwh)
+```
+
+### 예시 실행
+```
+입력(시간): 23
+입력(kWh): 10
+요금: 1200원
+```
+
+### 포인트
+- 범위조건
+- 산술
+
+## 8. 휴대폰번호 마스킹 + 유효성
+
+### 문제
+010으로 시작, 13자, 하이픈 2개
+→ 010-****-****
+아니면 "잘못된 번호"
+
+함수 `phone_mask(phone)`를 작성하시오.
+
+### 정답 코드
+```python
+def phone_mask(phone):
+    if phone.startswith("010") and len(phone) == 13 and phone[3] == '-' and phone[8] == '-':
+        print(phone[:4] + "****-****")
+    else:
+        print("잘못된 번호")
+
+phone = input("휴대폰번호 입력: ")
+phone_mask(phone)
+```
+
+### 예시 실행
+```
+휴대폰번호 입력: 010-1234-5678
+010-****-****
+```
+
+### 포인트
+- 문자열
+- 슬라이싱
+- 조건문
+
+## 9. 연령별 백신접종 안내
+
+### 문제
+이름, 나이 입력
+- 60세 이상: "노인 대상 4가백신 무료"
+- 18-59: "성인 3가백신 무료"
+- 0-17: "소아백신/부모동의 필요"
+- 그 외: "입력 오류"
+
+함수 `vaccine_info(name, age)`를 작성하시오.
+
+### 정답 코드
+```python
+def vaccine_info(name, age):
+    if age >= 60:
+        print(f"{name}: 노인 대상 4가백신 무료")
+    elif 18 <= age <= 59:
+        print(f"{name}: 성인 3가백신 무료")
+    elif 0 <= age <= 17:
+        print(f"{name}: 소아백신/부모동의 필요")
+    else:
+        print("입력 오류")
+
+name = input("이름 입력: ")
+age = int(input("나이 입력: "))
+vaccine_info(name, age)
+```
+
+### 예시 실행
+```
+이름 입력: 이지은
+나이 입력: 61
+이지은: 노인 대상 4가백신 무료
+```
+
+### 포인트
+- 조건문
+- 범위
+- 포맷
+
+## 10. 무인점포 QR 입장 제한
+
+### 문제
+입장시간, QR유효(Y/N), 미성년(Y/N)
+- QR N: "입장불가(QR 필요)"
+- 미성년 Y & 22-5시: "야간 미성년 입장 제한"
+- 그 외: "입장 가능"
+
+함수 `unmanned_store_entry(hour, qr, minor)`를 작성하시오.
+
+### 정답 코드
+```python
+def unmanned_store_entry(hour, qr, minor):
+    if qr == "N":
+        print("입장불가(QR 필요)")
+    elif minor == "Y" and (hour >= 22 or hour < 6):
+        print("야간 미성년 입장 제한")
+    else:
+        print("입장 가능")
+
+hour = int(input("입장시간(0~23): "))
+qr = input("QR유효(Y/N): ")
+minor = input("미성년(Y/N): ")
+unmanned_store_entry(hour, qr, minor)
+```
+
+### 예시 실행
+```
+입장시간(0~23): 23
+QR유효(Y/N): Y
+미성년(Y/N): Y
+야간 미성년 입장 제한
+```
+
+### 포인트
+- 논리연산
+- 조건 중첩
+
+## 11. 유심 해킹 통합 시뮬레이터
+
+### 문제
+번호, 6자리 OTP 입력
+- OTP 3회 실패: "도용 의심: 유심 잠금"
+- 인증 중 성공시: "인증 성공!"
+- 메시지 입력: 위험 키워드 2개 이상시 "피싱 의심 메시지", 그 외 "정상 메시지"
+
+함수 `sim_security()`를 작성하시오.
+
+### 정답 코드
+```python
+def sim_security():
+    phone = input("휴대폰번호 입력: ")
+    otp = input("OTP코드(6자리): ")
+    trial = 0
+    locked = False
+    while trial < 3:
+        print(f"[{trial+1}회] OTP 입력: ", end="")
+        ans = input()
+        if ans == otp:
+            print("인증 성공!")
+            break
+        else:
+            trial += 1
+            print(f"틀렸습니다. 남은 시도: {3-trial}")
+    if trial == 3:
+        print("도용 의심: 유심 잠금")
+        locked = True
+    msg = input("메시지 입력: ")
+    keywords = ["유심", "재발급", "인증", "계좌", "로그인", "보안"]
+    count = 0
+    for w in keywords:
+        if w in msg:
+            count += 1
+    if count >= 2:
+        print("피싱 의심 메시지")
+    else:
+        print("정상 메시지")
+
+sim_security()
+```
+
+### 예시 실행
+```
+휴대폰번호 입력: 01012341234
+OTP코드(6자리): 664210
+[1회] OTP 입력: 111111
+틀렸습니다. 남은 시도: 2
+[2회] OTP 입력: 222222
+틀렸습니다. 남은 시도: 1
+[3회] OTP 입력: 333333
+틀렸습니다. 남은 시도: 0
+도용 의심: 유심 잠금
+메시지 입력: 계좌 재발급 후 로그인 필요
+피싱 의심 메시지
+```
+
+### 포인트
+- 반복문
+- if/else
+- 중첩
+- break
+- for
+- 문자열
+- in
+- 카운트
+- 포맷
+- 함수 
