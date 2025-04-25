@@ -917,3 +917,43 @@ OTP코드(6자리): 664210
 - 카운트
 - 포맷
 - 함수 
+
+
+```
+def print_bingo(a,b,c,d,e,f,g,h,i):
+    print(f"{a} {b} {c}")
+    print(f"{d} {e} {f}")
+    print(f"{g} {h} {i}\n")
+
+def check_bingo(a,b,c,d,e,f,g,h,i):
+    lines = [(a,b,c), (d,e,f), (g,h,i), (a,d,g), (b,e,h), (c,f,i), (a,e,i), (c,e,g)]
+    for x,y,z in lines:
+        if x == y == z == "*":
+            return True
+    return False
+
+def main():
+    a,b,c,d,e,f,g,h,i = "1","2","3","4","5","6","7","8","9"
+    print_bingo(a,b,c,d,e,f,g,h,i)
+    while True:
+        n = input("1~9 선택: ")
+        if n not in [a,b,c,d,e,f,g,h,i]:
+            print("잘못 입력. 다시.")
+            continue
+        if n==a: a="*"
+        elif n==b: b="*"
+        elif n==c: c="*"
+        elif n==d: d="*"
+        elif n==e: e="*"
+        elif n==f: f="*"
+        elif n==g: g="*"
+        elif n==h: h="*"
+        elif n==i: i="*"
+        print_bingo(a,b,c,d,e,f,g,h,i)
+        if check_bingo(a,b,c,d,e,f,g,h,i):
+            print("빙고 완성!")
+            break
+
+if __name__ == "__main__":
+    main()
+```
