@@ -439,6 +439,9 @@ kWh = int(input("사용량은 몇 KWh인가요? "))
 fee = calculateElectricRate(month, kWh)
 print("전력량요금은 {}원입니다.".format(fee))
 전기요금은 {:.1f}원입니다.".format(fee))
+print(f"전력량요금은 {fee}원입니다.")
+print(f"전기요금은 {fee:.1f}원입니다.")
+
 ```
 지금은 몇월인가요? 1  
 사용량은 몇 KWh인가요? 800  
